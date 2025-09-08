@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Panel Principal - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        Panel Principal
+      </h1>
+      <p class="text-muted">Bienvenido, {{ current_user.nombre_completo }} ({{ current_user.rol }})</p>
+    </div>
+  </div>
+
+  <!-- Tarjetas de resumen -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Total de Reportes</h5>
+              <h2 class="mb-0">{{ stats.total_reportes or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-file-alt" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-primary border-primary">
+          <a href="{{ url_for('reportes') }}" class="text-white text-decoration-none">Ver todos <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">En Proceso</h5>
+              <h2 class="mb-0">{{ stats.en_proceso or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-spinner" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-success border-success">
+          <a href="{{ url_for('reportes') }}?estatus=proceso" class="text-white text-decoration-none">Ver detalles <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Atendidos</h5>
+              <h2 class="mb-0">{{ stats.atendidos or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-warning border-warning">
+          <a href="{{ url_for('reportes') }}?estatus=atendido" class="text-white text-decoration-none">Ver detalles <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Este Mes</h5>
+              <h2 class="mb-0">{{ stats.este_mes or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-calendar-alt" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-info border-info">
+          <a href="{{ url_for('reportes') }}?mes=actual" class="text-white text-decoration-none">Ver reportes <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas de Acciones Preventivas -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3><i class="fas fa-shield-alt me-2 text-pemex-blue"></i>Acciones Preventivas</h3>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-gradient-primary text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Total Acciones</h5>
+              <h2 class="mb-0">{{ stats_acciones.total_acciones or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-shield-alt" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-primary border-primary">
+          <a href="{{ url_for('acciones') }}" class="text-white text-decoration-none">Ver todas <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-gradient-success text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Completadas</h5>
+              <h2 class="mb-0">{{ stats_acciones.acciones_completadas or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-success border-success">
+          <a href="{{ url_for('acciones') }}?estado=Completado" class="text-white text-decoration-none">Ver detalles <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-gradient-warning text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">En Proceso</h5>
+              <h2 class="mb-0">{{ stats_acciones.acciones_proceso or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-clock" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-warning border-warning">
+          <a href="{{ url_for('acciones') }}?estado=En Proceso" class="text-white text-decoration-none">Ver detalles <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card bg-gradient-info text-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <h5 class="card-title">Este Mes</h5>
+              <h2 class="mb-0">{{ stats_acciones.acciones_mes or 0 }}</h2>
+            </div>
+            <div>
+              <i class="fas fa-calendar-plus" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-info border-info">
+          <a href="{{ url_for('formulario_accion') }}" class="text-white text-decoration-none">Nueva acción <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3>Acciones Rápidas</h3>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-plus-circle text-primary mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Nuevo Reporte</h5>
+          <p class="card-text">Crear un nuevo reporte de Acción Preventiva o Problemática Social</p>
+          <a href="{{ url_for('registro_reporte') }}" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Crear Reporte</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-shield-alt text-pemex-blue mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Nueva Acción</h5>
+          <p class="card-text">Registrar una nueva acción preventiva para problemática social</p>
+          <a href="{{ url_for('formulario_accion') }}" class="btn btn-pemex-primary"><i class="fas fa-plus me-2"></i>Crear Acción</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-tasks text-success mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Seguimiento</h5>
+          <p class="card-text">Dar seguimiento a compromisos y acuerdos de reportes existentes</p>
+          <a href="{{ url_for('seguimiento_acuerdos') }}" class="btn btn-success"><i class="fas fa-tasks me-2"></i>Ver Seguimiento</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-download text-info mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Exportar Datos</h5>
+          <p class="card-text">Generar y descargar reportes en formato Excel o CSV</p>
+          <a href="{{ url_for('reportes') }}" class="btn btn-info"><i class="fas fa-chart-bar me-2"></i>Ver Reportes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reportes recientes (solo si hay datos) -->
+  {% if reportes_recientes %}
+    <div class="row">
+      <div class="col-12">
+        <h3>Reportes Recientes</h3>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Folio</th>
+                    <th>Tipo</th>
+                    <th>Fecha Reporte</th>
+                    <th>Oficina Regional</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for reporte in reportes_recientes %}
+                    <tr>
+                      <td>
+                        <strong>{{ reporte.folio }}</strong>
+                      </td>
+                      <td>
+                        {% if reporte.tipo_reporte.nombre == 'Acción Preventiva' %}
+                          <span class="badge bg-primary">{{ reporte.tipo_reporte.nombre }}</span>
+                        {% elif reporte.tipo_reporte.nombre == 'Problemática Social' %}
+                          <span class="badge bg-warning">{{ reporte.tipo_reporte.nombre }}</span>
+                        {% else %}
+                          <span class="badge bg-danger">{{ reporte.tipo_reporte.nombre }}</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ reporte.fecha_reporte.strftime('%d/%m/%Y') }}</td>
+                      <td>{{ reporte.oficina_regional.nombre }}</td>
+                      <td>
+                        {% if reporte.estatus_actual %}
+                          <span class="badge bg-info">{{ reporte.estatus_actual.nombre }}</span>
+                        {% else %}
+                          <span class="badge bg-secondary">Sin estatus</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-success"><i class="fas fa-edit"></i></a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-info text-center">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>¡Bienvenido al sistema!</strong><br />
+          No hay reportes registrados aún. Comienza creando tu primer reporte.
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if current_user.rol == 'Administrador' %}
+    <!-- Panel de administración rápido -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card border-warning">
+          <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+              <i class="fas fa-cog me-2"></i>
+              Panel de Administración
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Gestión de Usuarios</h6>
+                <p class="small text-muted">Administrar usuarios del sistema y sus roles</p>
+                <a href="{{ url_for('admin') }}" class="btn btn-outline-warning btn-sm"><i class="fas fa-users me-1"></i>Gestionar Usuarios</a>
+              </div>
+              <div class="col-md-6">
+                <h6>Configuración del Sistema</h6>
+                <p class="small text-muted">Administrar catálogos y configuraciones</p>
+                <a href="{{ url_for('admin') }}" class="btn btn-outline-warning btn-sm"><i class="fas fa-cog me-1"></i>Configuración</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

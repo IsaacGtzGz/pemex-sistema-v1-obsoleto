@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Acciones Preventivas - PEMEX{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="page-header fade-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-shield-alt me-3 text-pemex-blue"></i>Acciones Preventivas</h1>
+                <p class="mb-0">Gestión y seguimiento de acciones preventivas registradas</p>
+            </div>
+            <a href="{{ url_for('formulario_accion') }}" class="btn btn-pemex-primary">
+                <i class="fas fa-plus me-2"></i>Nueva Acción
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-3">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-list-ul fa-2x me-3"></i>
+                        <div>
+                            <h5 class="card-title mb-1">Total Acciones</h5>
+                            <h3 class="mb-0">{{ acciones|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="card-title mb-1">Completadas</h5>
+                            <h3 class="mb-0">{{ acciones|selectattr("estado_accion", "equalto", "Completado")|list|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-clock fa-2x me-3"></i>
+                        <div>
+                            <h5 class="card-title mb-1">En Proceso</h5>
+                            <h3 class="mb-0">{{ acciones|selectattr("estado_accion", "equalto", "En Proceso")|list|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-file-alt fa-2x me-3"></i>
+                        <div>
+                            <h5 class="card-title mb-1">Registradas</h5>
+                            <h3 class="mb-0">{{ acciones|selectattr("estado_accion", "equalto", "Registrado")|list|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4 fade-in">
+        <div class="card-body">
+            <form class="row g-3" id="filtrosForm">
+                <div class="col-md-3">
+                    <label for="filtroEstado" class="form-label">Estado</label>
+                    <select class="form-select" id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="Registrado">Registrado</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Cancelado">Cancelado</option>
+                        <option value="Borrador">Borrador</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroRegion" class="form-label">Región</label>
+                    <select class="form-select" id="filtroRegion">
+                        <option value="">Todas las regiones</option>
+                        <option value="Norte">Norte</option>
+                        <option value="Sur">Sur</option>
+                        <option value="Centro">Centro</option>
+                        <option value="Marina Noreste">Marina Noreste</option>
+                        <option value="Marina Suroeste">Marina Suroeste</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroFecha" class="form-label">Fecha desde</label>
+                    <input type="date" class="form-control" id="filtroFecha">
+                </div>
+                <div class="col-md-3">
+                    <label for="buscarTexto" class="form-label">Buscar</label>
+                    <input type="text" class="form-control" id="buscarTexto" placeholder="Folio, descripción...">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de acciones -->
+    <div class="main-content fade-in">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Listado de Acciones Preventivas</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="tablaAcciones">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Folio</th>
+                                <th>Fecha</th>
+                                <th>Región</th>
+                                <th>Estado/Municipio</th>
+                                <th>Tipo Problemática</th>
+                                <th>Estado</th>
+                                <th>Avance</th>
+                                <th>Responsable</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for accion in acciones %}
+                            <tr data-estado="{{ accion.estado_accion }}" data-region="{{ accion.region }}" 
+                                data-fecha="{{ accion.fecha_registro }}" data-texto="{{ accion.folio }} {{ accion.descripcion_problematica }}">
+                                <td>
+                                    <strong class="text-pemex-blue">{{ accion.folio }}</strong>
+                                </td>
+                                <td>{{ accion.fecha_registro.strftime('%d/%m/%Y') if accion.fecha_registro else 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ accion.region }}</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ accion.estado }}</strong><br>
+                                        <small class="text-muted">{{ accion.municipio }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ accion.tipo_problematica }}</span>
+                                </td>
+                                <td>
+                                    {% if accion.estado_accion == 'Completado' %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>{{ accion.estado_accion }}
+                                        </span>
+                                    {% elif accion.estado_accion == 'En Proceso' %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>{{ accion.estado_accion }}
+                                        </span>
+                                    {% elif accion.estado_accion == 'Registrado' %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-file-alt me-1"></i>{{ accion.estado_accion }}
+                                        </span>
+                                    {% elif accion.estado_accion == 'Cancelado' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times-circle me-1"></i>{{ accion.estado_accion }}
+                                        </span>
+                                    {% elif accion.estado_accion == 'Borrador' %}
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-edit me-1"></i>{{ accion.estado_accion }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ accion.estado_accion }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar {% if accion.porcentaje_avance == 100 %}bg-success{% elif accion.porcentaje_avance >= 50 %}bg-warning{% else %}bg-info{% endif %}" 
+                                             role="progressbar" style="width: {{ accion.porcentaje_avance }}%">
+                                            {{ accion.porcentaje_avance }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ accion.responsable }}</strong><br>
+                                        <small class="text-muted">{{ accion.area_responsable }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('ver_accion', id=accion.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Ver detalle">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if accion.estado_accion != 'Completado' %}
+                                        <button class="btn btn-sm btn-outline-warning" 
+                                                onclick="editarAccion({{ accion.id }})" 
+                                                title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        {% endif %}
+                                        <button class="btn btn-sm btn-outline-info" 
+                                                onclick="seguimientoAccion({{ accion.id }})" 
+                                                title="Seguimiento">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para seguimiento -->
+<div class="modal fade" id="modalSeguimiento" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Seguimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formSeguimiento">
+                    <input type="hidden" id="accionId" name="accion_id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fechaSeguimiento" class="form-label">Fecha de seguimiento</label>
+                                <input type="date" class="form-control" id="fechaSeguimiento" name="fecha_seguimiento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="porcentajeAvance" class="form-label">Porcentaje de avance</label>
+                                <input type="number" class="form-control" id="porcentajeAvance" name="porcentaje_avance" 
+                                       min="0" max="100" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacionesSeguimiento" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observacionesSeguimiento" name="observaciones" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="responsableSeguimiento" class="form-label">Responsable</label>
+                        <input type="text" class="form-control" id="responsableSeguimiento" name="responsable" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-pemex-primary" onclick="guardarSeguimiento()">Guardar Seguimiento</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Filtros de tabla
+document.addEventListener('DOMContentLoaded', function() {
+    const filtroEstado = document.getElementById('filtroEstado');
+    const filtroRegion = document.getElementById('filtroRegion');
+    const filtroFecha = document.getElementById('filtroFecha');
+    const buscarTexto = document.getElementById('buscarTexto');
+    const tabla = document.getElementById('tablaAcciones');
+    const filas = tabla.querySelectorAll('tbody tr');
+
+    function aplicarFiltros() {
+        const estadoSeleccionado = filtroEstado.value;
+        const regionSeleccionada = filtroRegion.value;
+        const fechaSeleccionada = filtroFecha.value;
+        const textoSeleccionado = buscarTexto.value.toLowerCase();
+
+        filas.forEach(fila => {
+            const estado = fila.dataset.estado;
+            const region = fila.dataset.region;
+            const fecha = fila.dataset.fecha;
+            const texto = fila.dataset.texto.toLowerCase();
+
+            let mostrar = true;
+
+            if (estadoSeleccionado && estado !== estadoSeleccionado) mostrar = false;
+            if (regionSeleccionada && region !== regionSeleccionada) mostrar = false;
+            if (fechaSeleccionada && fecha < fechaSeleccionada) mostrar = false;
+            if (textoSeleccionado && !texto.includes(textoSeleccionado)) mostrar = false;
+
+            fila.style.display = mostrar ? '' : 'none';
+        });
+    }
+
+    filtroEstado.addEventListener('change', aplicarFiltros);
+    filtroRegion.addEventListener('change', aplicarFiltros);
+    filtroFecha.addEventListener('change', aplicarFiltros);
+    buscarTexto.addEventListener('input', aplicarFiltros);
+});
+
+function editarAccion(id) {
+    window.location.href = `/formulario_accion?edit=${id}`;
+}
+
+function seguimientoAccion(id) {
+    document.getElementById('accionId').value = id;
+    document.getElementById('fechaSeguimiento').value = new Date().toISOString().split('T')[0];
+    new bootstrap.Modal(document.getElementById('modalSeguimiento')).show();
+}
+
+function guardarSeguimiento() {
+    const form = document.getElementById('formSeguimiento');
+    const formData = new FormData(form);
+
+    fetch('/api/seguimiento_accion', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al guardar el seguimiento: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error de conexión: ' + error);
+    });
+}
+</script>
+{% endblock %}

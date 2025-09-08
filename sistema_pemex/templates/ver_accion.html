@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle Acción: {{ accion.folio }} - PEMEX{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header de la página -->
+    <div class="page-header fade-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-eye me-3 text-pemex-blue"></i>Detalle de Acción Preventiva</h1>
+                <p class="mb-0">Folio: <strong class="text-pemex-blue">{{ accion.folio }}</strong></p>
+            </div>
+            <div>
+                <a href="{{ url_for('acciones') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al listado
+                </a>
+                {% if accion.estado_accion != 'Completado' %}
+                <a href="{{ url_for('formulario_accion') }}?edit={{ accion.id }}" class="btn btn-pemex-primary">
+                    <i class="fas fa-edit me-2"></i>Editar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado y progreso -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Estado de la Acción</h5>
+                        {% if accion.estado_accion == 'Completado' %}
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle me-1"></i>{{ accion.estado_accion }}
+                            </span>
+                        {% elif accion.estado_accion == 'En Proceso' %}
+                            <span class="badge bg-warning fs-6">
+                                <i class="fas fa-clock me-1"></i>{{ accion.estado_accion }}
+                            </span>
+                        {% elif accion.estado_accion == 'Registrado' %}
+                            <span class="badge bg-info fs-6">
+                                <i class="fas fa-file-alt me-1"></i>{{ accion.estado_accion }}
+                            </span>
+                        {% elif accion.estado_accion == 'Cancelado' %}
+                            <span class="badge bg-danger fs-6">
+                                <i class="fas fa-times-circle me-1"></i>{{ accion.estado_accion }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">{{ accion.estado_accion }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Progreso de la acción</label>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar {% if accion.porcentaje_avance == 100 %}bg-success{% elif accion.porcentaje_avance >= 50 %}bg-warning{% else %}bg-info{% endif %}" 
+                                 role="progressbar" style="width: {{ accion.porcentaje_avance }}%">
+                                {{ accion.porcentaje_avance }}%
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        Última actualización: {{ accion.fecha_ultima_actualizacion.strftime('%d/%m/%Y') if accion.fecha_ultima_actualizacion else 'No registrada' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Tiempo de ejecución</h6>
+                    {% if accion.fecha_inicio and accion.fecha_fin %}
+                        {% set dias_duracion = (accion.fecha_fin - accion.fecha_inicio).days %}
+                        <h3 class="text-pemex-blue mb-1">{{ dias_duracion }}</h3>
+                        <small class="text-muted">días planificados</small>
+                    {% else %}
+                        <h3 class="text-muted mb-1">N/A</h3>
+                        <small class="text-muted">Sin fechas definidas</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información general -->
+    <div class="row mb-4 fade-in">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información General</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Fecha de registro:</td>
+                                    <td>{{ accion.fecha_registro.strftime('%d/%m/%Y') if accion.fecha_registro else 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Región:</td>
+                                    <td><span class="badge bg-info">{{ accion.region }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Activo:</td>
+                                    <td><span class="badge bg-secondary">{{ accion.activo }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Instalación:</td>
+                                    <td>{{ accion.instalacion }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Presupuesto:</td>
+                                    <td>
+                                        {% if accion.presupuesto %}
+                                            ${{ "{:,.2f}".format(accion.presupuesto) }} MXN
+                                        {% else %}
+                                            <span class="text-muted">No especificado</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Responsable:</td>
+                                    <td>{{ accion.responsable }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Área responsable:</td>
+                                    <td>{{ accion.area_responsable }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Fecha inicio:</td>
+                                    <td>{{ accion.fecha_inicio.strftime('%d/%m/%Y') if accion.fecha_inicio else 'No definida' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Fecha fin:</td>
+                                    <td>{{ accion.fecha_fin.strftime('%d/%m/%Y') if accion.fecha_fin else 'No definida' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Registrado por:</td>
+                                    <td>{{ accion.usuario.nombre_completo if accion.usuario else 'Usuario no disponible' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ubicación geográfica -->
+    <div class="row mb-4 fade-in">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Ubicación Geográfica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <p><strong>Estado:</strong> {{ accion.estado }}</p>
+                            <p><strong>Municipio:</strong> {{ accion.municipio }}</p>
+                            <p><strong>Localidad:</strong> {{ accion.localidad }}</p>
+                            {% if accion.coordenadas_x and accion.coordenadas_y %}
+                            <p><strong>Coordenadas:</strong> 
+                                {{ accion.coordenadas_x }}, {{ accion.coordenadas_y }}
+                                <a href="https://www.google.com/maps?q={{ accion.coordenadas_x }},{{ accion.coordenadas_y }}" 
+                                   target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                                    <i class="fas fa-external-link-alt me-1"></i>Ver en mapa
+                                </a>
+                            </p>
+                            {% else %}
+                            <p><strong>Coordenadas:</strong> <span class="text-muted">No especificadas</span></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Problemática Social</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Tipo de problemática:</strong> 
+                        <span class="badge bg-warning">{{ accion.tipo_problematica }}</span>
+                    </p>
+                    <p><strong>Nivel de impacto:</strong> 
+                        <span class="badge bg-{% if accion.nivel_impacto == 'Alto' %}danger{% elif accion.nivel_impacto == 'Medio' %}warning{% else %}info{% endif %}">
+                            {{ accion.nivel_impacto }}
+                        </span>
+                    </p>
+                    <p><strong>Actor social:</strong> {{ accion.actor_social }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descripción detallada -->
+    <div class="row mb-4 fade-in">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Descripción de la Problemática</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Descripción de la problemática:</label>
+                        <div class="border rounded p-3 bg-light">
+                            {{ accion.descripcion_problematica }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Acción preventiva propuesta:</label>
+                        <div class="border rounded p-3 bg-light">
+                            {{ accion.accion_preventiva }}
+                        </div>
+                    </div>
+                    {% if accion.observaciones %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Observaciones:</label>
+                        <div class="border rounded p-3 bg-light">
+                            {{ accion.observaciones }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seguimientos -->
+    <div class="row mb-4 fade-in">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Historial de Seguimientos</h5>
+                    {% if accion.estado_accion != 'Completado' %}
+                    <button class="btn btn-sm btn-pemex-primary" onclick="nuevoSeguimiento()">
+                        <i class="fas fa-plus me-1"></i>Nuevo Seguimiento
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if accion.seguimientos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Estado Anterior</th>
+                                    <th>Estado Nuevo</th>
+                                    <th>Avance</th>
+                                    <th>Responsable</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seguimiento in accion.seguimientos %}
+                                <tr>
+                                    <td>{{ seguimiento.fecha_seguimiento.strftime('%d/%m/%Y') }}</td>
+                                    <td><span class="badge bg-secondary">{{ seguimiento.estado_anterior }}</span></td>
+                                    <td><span class="badge bg-info">{{ seguimiento.estado_nuevo }}</span></td>
+                                    <td>
+                                        <div class="progress" style="width: 100px; height: 20px;">
+                                            <div class="progress-bar bg-info" style="width: {{ seguimiento.porcentaje_avance }}%">
+                                                {{ seguimiento.porcentaje_avance }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ seguimiento.responsable }}</td>
+                                    <td>{{ seguimiento.observaciones }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <p>No hay seguimientos registrados para esta acción</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para nuevo seguimiento -->
+<div class="modal fade" id="modalSeguimiento" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Nuevo Seguimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formSeguimiento">
+                    <input type="hidden" name="accion_id" value="{{ accion.id }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fechaSeguimiento" class="form-label">Fecha de seguimiento</label>
+                                <input type="date" class="form-control" id="fechaSeguimiento" name="fecha_seguimiento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="porcentajeAvance" class="form-label">Porcentaje de avance</label>
+                                <input type="number" class="form-control" id="porcentajeAvance" name="porcentaje_avance" 
+                                       min="0" max="100" value="{{ accion.porcentaje_avance }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estadoAnterior" class="form-label">Estado anterior</label>
+                                <input type="text" class="form-control" id="estadoAnterior" name="estado_anterior" 
+                                       value="{{ accion.estado_accion }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estadoNuevo" class="form-label">Estado nuevo</label>
+                                <select class="form-select" id="estadoNuevo" name="estado_nuevo" required>
+                                    <option value="Registrado" {% if accion.estado_accion == 'Registrado' %}selected{% endif %}>Registrado</option>
+                                    <option value="En Proceso" {% if accion.estado_accion == 'En Proceso' %}selected{% endif %}>En Proceso</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="responsableSeguimiento" class="form-label">Responsable del seguimiento</label>
+                        <input type="text" class="form-control" id="responsableSeguimiento" name="responsable" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacionesSeguimiento" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observacionesSeguimiento" name="observaciones" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-pemex-primary" onclick="guardarSeguimiento()">Guardar Seguimiento</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar fecha actual por defecto
+    document.getElementById('fechaSeguimiento').value = new Date().toISOString().split('T')[0];
+});
+
+function nuevoSeguimiento() {
+    new bootstrap.Modal(document.getElementById('modalSeguimiento')).show();
+}
+
+function guardarSeguimiento() {
+    const form = document.getElementById('formSeguimiento');
+    const formData = new FormData(form);
+
+    fetch('/api/seguimiento_accion', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al guardar el seguimiento: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error de conexión: ' + error);
+    });
+}
+</script>
+{% endblock %}

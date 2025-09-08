@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Gestión de Usuarios - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="h3 mb-0">
+            <i class="fas fa-users text-primary me-2"></i>
+            Gestión de Usuarios
+          </h2>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario"><i class="fas fa-plus me-2"></i>Nuevo Usuario</button>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Usuarios del Sistema</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover" id="tablaUsuarios">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Correo</th>
+                    <th>Puesto</th>
+                    <th>Rol</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="bodyUsuarios">
+                  {% for usuario in usuarios %}
+                    <tr data-usuario-id="{{ usuario.id }}">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-sm rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2">{{ usuario.nombre.0 }}{{ usuario.apellido_paterno.0 }}</div>
+                          <strong>{{ usuario.username }}</strong>
+                        </div>
+                      </td>
+                      <td>{{ usuario.nombre_completo }}</td>
+                      <td>{{ usuario.email }}</td>
+                      <td>{{ usuario.puesto or 'N/A' }}</td>
+                      <td>
+                        <span class="badge {% if usuario.rol == 'Administrador' %}
+                            
+                            bg-danger
+
+                          {% else %}
+                            
+                            bg-info
+
+                          {% endif %}">
+                          {{ usuario.rol }}
+                        </span>
+                      </td>
+                      <td>
+                        {% if usuario.fecha_creacion %}
+                          {{ usuario.fecha_creacion.strftime('%d/%m/%Y') }}
+                        {% else %}
+                          N/A
+                        {% endif %}
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <button class="btn btn-outline-primary btn-editar" data-usuario-id="{{ usuario.id }}" title="Editar usuario"><i class="fas fa-edit"></i></button>
+                          {% if usuario.id != current_user.id %}
+                            <button class="btn btn-outline-danger btn-eliminar" data-usuario-id="{{ usuario.id }}" data-usuario-nombre="{{ usuario.nombre_completo }}" title="Eliminar usuario"><i class="fas fa-trash"></i></button>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Usuario -->
+  <div class="modal fade" id="modalUsuario" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-user me-2"></i>
+            <span id="tituloModal">Nuevo Usuario</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="formUsuario">
+          <div class="modal-body">
+            <input type="hidden" id="usuarioId" name="usuarioId" />
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="username" class="form-label">Nombre de Usuario *</label>
+                <input type="text" class="form-control" id="username" name="username" required />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Correo Electrónico *</label>
+                <input type="email" class="form-control" id="email" name="email" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="nombre" class="form-label">Nombre *</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="apellido_paterno" class="form-label">Apellido Paterno *</label>
+                <input type="text" class="form-control" id="apellido_paterno" name="apellido_paterno" required />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="apellido_materno" class="form-label">Apellido Materno</label>
+                <input type="text" class="form-control" id="apellido_materno" name="apellido_materno" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefono" name="telefono" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="puesto" class="form-label">Puesto</label>
+                <input type="text" class="form-control" id="puesto" name="puesto" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="rol" class="form-label">Rol *</label>
+                <select class="form-select" id="rol" name="rol" required>
+                  <option value="Capturista">Capturista</option>
+                  <option value="Administrador">Administrador</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Contraseña <span id="textoPassword">*</span></label>
+                <div class="input-group">
+                  <input type="password" class="form-control" id="password" name="password" />
+                  <button type="button" class="btn btn-outline-secondary" id="togglePassword"><i class="fas fa-eye"></i></button>
+                </div>
+                <small class="form-text text-muted" id="ayudaPassword">Mínimo 6 caracteres</small>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-2"></i>
+              <span id="textoBoton">Crear Usuario</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+            Confirmar Eliminación
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            ¿Estás seguro que deseas eliminar al usuario <strong id="nombreUsuarioEliminar"></strong>?
+          </p>
+          <p class="text-muted">Esta acción desactivará el usuario pero mantendrá sus datos para histórico.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmarEliminar"><i class="fas fa-trash me-2"></i>Eliminar Usuario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .avatar-sm {
+      width: 35px;
+      height: 35px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .table th {
+      border-top: none;
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    .table td {
+      vertical-align: middle;
+    }
+    
+    .btn-group-sm .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+  </style>
+
+  <script></script>
+{% endblock %}

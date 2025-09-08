@@ -1,0 +1,530 @@
+/* ============================================
+   SISTEMA PEMEX - TEMA CORPORATIVO OFICIAL
+   Colores inspirados en la identidad visual de PEMEX
+   SIN DEGRADADOS - Diseño limpio y profesional
+   ============================================ */
+
+/* Colores principales basados en la identidad visual de PEMEX */
+:root {
+    /* Colores principales PEMEX */
+    --pemex-verde-principal: #0D7377;        /* Verde petrolero principal */
+    --pemex-verde-oscuro: #0A5D61;          /* Verde oscuro PEMEX */
+    --pemex-verde-claro: #14A085;           /* Verde claro complementario */
+    --pemex-azul-marino: #003366;           /* Azul marino corporativo */
+    --pemex-gris-corporativo: #2C3E50;      /* Gris corporativo */
+    --pemex-blanco: #FFFFFF;                /* Blanco puro */
+    --pemex-negro: #1A1A1A;                 /* Negro suave */
+    
+    /* Colores secundarios */
+    --pemex-gris-oscuro: #34495E;
+    --pemex-gris-medio: #7F8C8D;
+    --pemex-gris-claro: #BDC3C7;
+    --pemex-gris-muy-claro: #F8F9FA;
+    
+    /* Estados y alertas */
+    --pemex-success: #27AE60;
+    --pemex-warning: #F39C12;
+    --pemex-danger: #E74C3C;
+    --pemex-info: #3498DB;
+}
+
+/* Reset y configuración base */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--pemex-blanco);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--pemex-negro);
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================
+   NAVBAR PROFESIONAL PEMEX
+   ============================================ */
+
+.navbar {
+    background-color: var(--pemex-verde-principal);
+    box-shadow: 0 2px 8px rgba(13, 115, 119, 0.15);
+    border-bottom: 2px solid var(--pemex-verde-oscuro);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: white !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-brand .fas {
+    color: var(--pemex-blanco);
+    font-size: 1.6rem;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem !important;
+    border-radius: 6px;
+    margin: 0 0.25rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+    background-color: var(--pemex-verde-oscuro);
+}
+
+.navbar-nav .nav-link.active {
+    background-color: var(--pemex-verde-oscuro);
+    color: white !important;
+}
+
+/* ============================================
+   BOTONES PEMEX
+   ============================================ */
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-primary {
+    background-color: var(--pemex-verde-principal);
+    border-color: var(--pemex-verde-principal);
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--pemex-verde-oscuro);
+    border-color: var(--pemex-verde-oscuro);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 115, 119, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--pemex-gris-corporativo);
+    border-color: var(--pemex-gris-corporativo);
+    color: white;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: var(--pemex-gris-oscuro);
+    border-color: var(--pemex-gris-oscuro);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--pemex-success);
+    border-color: var(--pemex-success);
+    color: white;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: #229954;
+    border-color: #229954;
+    color: white;
+}
+
+.btn-warning {
+    background-color: var(--pemex-warning);
+    border-color: var(--pemex-warning);
+    color: white;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+    background-color: #E67E22;
+    border-color: #E67E22;
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--pemex-danger);
+    border-color: var(--pemex-danger);
+    color: white;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: #C0392B;
+    border-color: #C0392B;
+    color: white;
+}
+
+.btn-info {
+    background-color: var(--pemex-info);
+    border-color: var(--pemex-info);
+    color: white;
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    background-color: #2980B9;
+    border-color: #2980B9;
+    color: white;
+}
+
+/* ============================================
+   CARDS Y CONTENEDORES
+   ============================================ */
+
+.card {
+    border: 1px solid var(--pemex-gris-claro);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background-color: var(--pemex-blanco);
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: var(--pemex-gris-muy-claro);
+    border-bottom: 1px solid var(--pemex-gris-claro);
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: var(--pemex-negro);
+}
+
+.card-header.bg-primary {
+    background-color: var(--pemex-verde-principal) !important;
+    color: white;
+    border-bottom: none;
+}
+
+.card-header.bg-secondary {
+    background-color: var(--pemex-gris-corporativo) !important;
+    color: white;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-footer {
+    background-color: var(--pemex-gris-muy-claro);
+    border-top: 1px solid var(--pemex-gris-claro);
+    padding: 0.75rem 1.25rem;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+
+.form-control {
+    border: 1px solid var(--pemex-gris-claro);
+    border-radius: 6px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--pemex-verde-principal);
+    box-shadow: 0 0 0 0.2rem rgba(13, 115, 119, 0.15);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--pemex-negro);
+    margin-bottom: 0.5rem;
+}
+
+/* ============================================
+   BADGES Y ALERTAS
+   ============================================ */
+
+.badge {
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+}
+
+.badge.bg-primary {
+    background-color: var(--pemex-verde-principal) !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--pemex-gris-corporativo) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--pemex-success) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--pemex-warning) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--pemex-danger) !important;
+}
+
+.badge.bg-info {
+    background-color: var(--pemex-info) !important;
+}
+
+.alert {
+    border-radius: 6px;
+    border: none;
+    padding: 1rem;
+}
+
+.alert-success {
+    background-color: rgba(39, 174, 96, 0.1);
+    color: var(--pemex-success);
+    border-left: 4px solid var(--pemex-success);
+}
+
+.alert-warning {
+    background-color: rgba(243, 156, 18, 0.1);
+    color: var(--pemex-warning);
+    border-left: 4px solid var(--pemex-warning);
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--pemex-danger);
+    border-left: 4px solid var(--pemex-danger);
+}
+
+.alert-info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--pemex-info);
+    border-left: 4px solid var(--pemex-info);
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+
+.table {
+    background-color: var(--pemex-blanco);
+}
+
+.table thead th {
+    background-color: var(--pemex-verde-principal);
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--pemex-gris-muy-claro);
+}
+
+.table tbody td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--pemex-gris-claro);
+}
+
+/* ============================================
+   SIDEBAR PARA DASHBOARD DE ADMINISTRADOR
+   ============================================ */
+
+.admin-sidebar {
+    background-color: var(--pemex-azul-marino);
+    min-height: 100vh;
+    padding: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.admin-sidebar .sidebar-header {
+    background-color: var(--pemex-verde-principal);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--pemex-verde-oscuro);
+}
+
+.admin-sidebar .sidebar-header h4 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.admin-sidebar .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.admin-sidebar .sidebar-menu li {
+    margin: 0;
+}
+
+.admin-sidebar .sidebar-menu a {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.admin-sidebar .sidebar-menu a:hover,
+.admin-sidebar .sidebar-menu a.active {
+    background-color: var(--pemex-verde-principal);
+    border-left-color: var(--pemex-verde-claro);
+    color: white;
+}
+
+.admin-sidebar .sidebar-menu a i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--pemex-gris-muy-claro);
+}
+
+/* ============================================
+   UTILIDADES Y ESPACIADO
+   ============================================ */
+
+.text-pemex-primary {
+    color: var(--pemex-verde-principal) !important;
+}
+
+.text-pemex-secondary {
+    color: var(--pemex-gris-corporativo) !important;
+}
+
+.bg-pemex-primary {
+    background-color: var(--pemex-verde-principal) !important;
+    color: white;
+}
+
+.bg-pemex-secondary {
+    background-color: var(--pemex-gris-corporativo) !important;
+    color: white;
+}
+
+.border-pemex-primary {
+    border-color: var(--pemex-verde-principal) !important;
+}
+
+.pemex-shadow {
+    box-shadow: 0 4px 16px rgba(13, 115, 119, 0.15);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .admin-sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* ============================================
+   COMPONENTES ESPECÍFICOS
+   ============================================ */
+
+/* Dashboard Cards */
+.dashboard-card {
+    background-color: var(--pemex-blanco);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+.dashboard-card .card-body {
+    padding: 2rem;
+}
+
+.dashboard-card .card-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--pemex-verde-principal);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-card .card-text {
+    color: var(--pemex-gris-corporativo);
+    font-weight: 500;
+}
+
+/* Loading States */
+.loading-spinner {
+    border: 3px solid var(--pemex-gris-claro);
+    border-top: 3px solid var(--pemex-verde-principal);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Footer */
+.footer {
+    background-color: var(--pemex-azul-marino);
+    color: white;
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.footer a {
+    color: var(--pemex-verde-claro);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: underline;
+}

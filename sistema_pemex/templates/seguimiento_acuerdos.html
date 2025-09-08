@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Seguimiento de Compromisos - Sistema PEMEX{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tasks me-2"></i>
+            Seguimiento de Compromisos y/o Acuerdos
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Panel Principal</a></li>
+                <li class="breadcrumb-item active">Seguimiento</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Buscador de reportes -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-search me-2"></i>
+            Buscar Reporte para Seguimiento
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Folio del Reporte</label>
+                <input type="text" class="form-control" id="buscar_folio" 
+                       placeholder="Ej: ORC-PS-001">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Tipo de Reporte</label>
+                <select class="form-select" id="filtro_tipo">
+                    <option value="">Todos los tipos</option>
+                    <option value="1">Acción Preventiva</option>
+                    <option value="2">Problemática Social</option>
+                    <option value="3">Conflicto</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-primary d-block w-100" onclick="buscarReportes()">
+                    <i class="fas fa-search me-2"></i>Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resultados de búsqueda -->
+<div id="resultados-busqueda" class="card" style="display: none;">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Reportes Encontrados
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Oficina Regional</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reportes">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de seguimiento -->
+<div id="formulario-seguimiento" class="card mt-4" style="display: none;">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-edit me-2"></i>
+            Registro de Seguimiento
+        </h5>
+    </div>
+    <div class="card-body">
+        <form id="form-seguimiento" method="POST">
+            <input type="hidden" id="reporte_id" name="reporte_id">
+            
+            <!-- Información del reporte seleccionado -->
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle me-2"></i>Reporte Seleccionado</h6>
+                <div id="info-reporte-seleccionado">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Estatus de cumplimiento -->
+                <div class="col-12 mb-3">
+                    <label class="form-label required">Estatus de Cumplimiento de Compromisos-Acuerdos</label>
+                    <textarea class="form-control" id="estatus_cumplimiento" name="estatus_cumplimiento" 
+                              rows="4" required placeholder="Describe el estatus actual de cumplimiento..."></textarea>
+                    <div class="help-text">Puedes agregar elementos numerados separados por líneas</div>
+                </div>
+                
+                <!-- Número de PROAs (calculado) -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label"># PROAs</label>
+                    <input type="number" class="form-control" id="numero_proas" name="numero_proas" readonly>
+                    <div class="help-text">Se calcula automáticamente según los elementos listados</div>
+                </div>
+                
+                <!-- Ficha DYD / Cédula PACMA -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label"># Ficha DYD / # Cédula Pacma</label>
+                    <input type="text" class="form-control" id="ficha_dyd_cedula_pacma" 
+                           name="ficha_dyd_cedula_pacma" placeholder="Número de ficha o cédula">
+                </div>
+            </div>
+            
+            <!-- Avances mensuales -->
+            <h6 class="mt-4 mb-3">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Avance de Cumplimiento por Mes
+            </h6>
+            
+            <div class="row">
+                {% set meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] %}
+                
+                {% for mes in meses %}
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">{{ mes }}</label>
+                    <select class="form-select avance-mensual" name="avance_{{ loop.index }}" 
+                            data-mes="{{ loop.index }}">
+                        <option value="">Sin avance</option>
+                        <option value="25">25% En Atención</option>
+                        <option value="50">50% Autorizado</option>
+                        <option value="75">75% En Ejecución</option>
+                        <option value="100">100% Concluido</option>
+                    </select>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Estatus final (calculado) -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Estatus Cumplimiento Final</label>
+                    <select class="form-select" id="estatus_cumplimiento_final" 
+                            name="estatus_cumplimiento_final" readonly>
+                        <option value="">Se calcula automáticamente</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Campos de uso exclusivo SPV -->
+            <h6 class="mt-4 mb-3">
+                <i class="fas fa-lock me-2"></i>
+                Uso Exclusivo de SPV
+            </h6>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Campo SPV 1</label>
+                    <textarea class="form-control" name="campo_spv_1" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Campo SPV 2</label>
+                    <textarea class="form-control" name="campo_spv_2" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Campo SPV 3</label>
+                    <textarea class="form-control" name="campo_spv_3" rows="2"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Campo SPV 4</label>
+                    <textarea class="form-control" name="campo_spv_4" rows="2"></textarea>
+                </div>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="row mt-4">
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="cancelarSeguimiento()">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Guardar Seguimiento
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar búsqueda de reportes
+    document.getElementById('btn-buscar').addEventListener('click', buscarReportes);
+    
+    // Configurar envío del formulario de seguimiento
+    const formSeguimiento = document.getElementById('form-seguimiento');
+    if (formSeguimiento) {
+        formSeguimiento.addEventListener('submit', function(e) {
+            e.preventDefault();
+            guardarSeguimiento();
+        });
+    }
+    
+    // Calcular automáticamente el número de PROAs
+    const estatusCumplimiento = document.getElementById('estatus_cumplimiento');
+    if (estatusCumplimiento) {
+        estatusCumplimiento.addEventListener('input', function() {
+            const texto = this.value;
+            const lineas = texto.split('\n').filter(linea => linea.trim() !== '');
+            document.getElementById('numero_proas').value = lineas.length;
+        });
+    }
+    
+    // Controlar avances mensuales
+    document.querySelectorAll('.avance-mensual').forEach(select => {
+        select.addEventListener('change', function() {
+            const valor = parseInt(this.value);
+            const mes = parseInt(this.dataset.mes);
+            
+            // Si se alcanza 100%, deshabilitar meses posteriores
+            if (valor === 100) {
+                document.querySelectorAll('.avance-mensual').forEach(otherSelect => {
+                    const mesSiguiente = parseInt(otherSelect.dataset.mes);
+                    if (mesSiguiente > mes) {
+                        otherSelect.disabled = true;
+                        otherSelect.value = '';
+                    }
+                });
+            } else {
+                // Rehabilitar meses posteriores
+                document.querySelectorAll('.avance-mensual').forEach(otherSelect => {
+                    otherSelect.disabled = false;
+                });
+            }
+            
+            calcularEstatusFinal();
+        });
+    });
+});
+
+function buscarReportes() {
+    const folio = document.getElementById('buscar_folio').value;
+    const tipo = document.getElementById('filtro_tipo').value;
+    
+    // Aquí iría la llamada a la API real
+    // Por ahora simularemos algunos datos
+    const reportesEjemplo = [
+        {
+            id: 1,
+            folio: 'ORC-PS-001',
+            tipo: 'Problemática Social',
+            fecha: '2025-08-15',
+            oficina: 'Oficina Regional Centro',
+            estatus: 'En proceso'
+        },
+        {
+            id: 2,
+            folio: 'ORC-AP-002',
+            tipo: 'Acción Preventiva',
+            fecha: '2025-08-20',
+            oficina: 'Oficina Regional Centro',
+            estatus: 'Registrado'
+        }
+    ];
+    
+    let html = '';
+    reportesEjemplo.forEach(reporte => {
+        if (!folio || reporte.folio.includes(folio.toUpperCase())) {
+            html += `
+                <tr>
+                    <td><strong>${reporte.folio}</strong></td>
+                    <td><span class="badge bg-primary">${reporte.tipo}</span></td>
+                    <td>${reporte.fecha}</td>
+                    <td>${reporte.oficina}</td>
+                    <td><span class="badge bg-info">${reporte.estatus}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="seleccionarReporte(${reporte.id}, '${reporte.folio}')">
+                            <i class="fas fa-edit me-1"></i>Dar Seguimiento
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+    
+    document.getElementById('tabla-reportes').innerHTML = html;
+    document.getElementById('resultados-busqueda').style.display = 'block';
+}
+
+function seleccionarReporte(id, folio) {
+    document.getElementById('reporte_id').value = id;
+    document.getElementById('info-reporte-seleccionado').innerHTML = `
+        <strong>Folio:</strong> ${folio}<br>
+        <strong>ID:</strong> ${id}
+    `;
+    document.getElementById('formulario-seguimiento').style.display = 'block';
+    
+    // Scroll al formulario
+    document.getElementById('formulario-seguimiento').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+    });
+}
+
+function cancelarSeguimiento() {
+    document.getElementById('formulario-seguimiento').style.display = 'none';
+    document.getElementById('form-seguimiento').reset();
+}
+
+function calcularEstatusFinal() {
+    let maxAvance = 0;
+    document.querySelectorAll('.avance-mensual').forEach(select => {
+        const valor = parseInt(select.value) || 0;
+        if (valor > maxAvance) {
+            maxAvance = valor;
+        }
+    });
+    
+    let estatus = '';
+    if (maxAvance === 0) estatus = 'Sin iniciar';
+    else if (maxAvance < 100) estatus = 'En proceso';
+    else estatus = 'Cumplido';
+    
+    const statusSelect = document.getElementById('estatus_cumplimiento_final');
+    if (statusSelect) {
+        statusSelect.innerHTML = `<option value="${estatus}" selected>${estatus}</option>`;
+    }
+}
+
+function guardarSeguimiento() {
+    // Recopilar datos del avance mensual
+    const avanceMensual = {};
+    document.querySelectorAll('.avance-mensual').forEach(select => {
+        if (select.value) {
+            avanceMensual[`mes_${select.dataset.mes}`] = parseInt(select.value);
+        }
+    });
+    
+    // Calcular porcentaje de avance general (el mayor registrado)
+    const avanceGeneral = Math.max(...Object.values(avanceMensual), 0);
+    
+    // Agregar el avance general al formulario
+    let avanceInput = document.querySelector('input[name="avance_porcentaje"]');
+    if (!avanceInput) {
+        avanceInput = document.createElement('input');
+        avanceInput.type = 'hidden';
+        avanceInput.name = 'avance_porcentaje';
+        document.getElementById('form-seguimiento').appendChild(avanceInput);
+    }
+    avanceInput.value = avanceGeneral;
+    
+    Utils.submitFormSeguimiento('form-seguimiento');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Sistema PEMEX - Inicio
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <!-- Hero Section -->
+      <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="display-4">
+              <i class="fas fa-oil-well me-3"></i>
+              Sistema PEMEX
+            </h1>
+            <p class="lead">Plataforma Web para Registro y Seguimiento de Acciones Preventivas y Problemática Social</p>
+            <p>Sistema centralizado, multiusuario, con control de acceso y validaciones robustas para la gestión, consulta y exportación de información.</p>
+            <a class="btn btn-light btn-lg" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión</a>
+          </div>
+          <div class="col-md-4 text-center">
+            <i class="fas fa-chart-line" style="font-size: 8rem; opacity: 0.3;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Características principales -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Características Principales</h2>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <i class="fas fa-users text-primary mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Gestión de Usuarios</h5>
+          <p class="card-text">Control de acceso por roles (Administrador y Capturista) con seguridad y encriptación de contraseñas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <i class="fas fa-file-alt text-success mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Formularios Inteligentes</h5>
+          <p class="card-text">Formularios con validaciones estrictas, campos dependientes y reglas de negocio automatizadas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center">
+        <div class="card-body">
+          <i class="fas fa-download text-info mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title">Exportación de Reportes</h5>
+          <p class="card-text">Exportación fácil de reportes a Excel/CSV con filtros y formatos personalizados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funcionalidades -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h3 class="text-center mb-4">Funcionalidades del Sistema</h3>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-plus-circle me-2"></i>
+            Registro de Reportes
+          </h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Acciones Preventivas
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Problemática Social
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Conflictos
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Validaciones automáticas
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Campos dependientes
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-tasks me-2"></i>
+            Seguimiento de Compromisos
+          </h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Vinculación con reportes
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Seguimiento mensual
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Porcentajes de avance
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Estatus automáticos
+            </li>
+            <li>
+              <i class="fas fa-check text-success me-2"></i>Historial de cambios
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beneficios -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card bg-light">
+        <div class="card-body text-center">
+          <h4 class="card-title">Beneficios de la Modernización</h4>
+          <div class="row mt-4">
+            <div class="col-md-3">
+              <i class="fas fa-rocket text-primary mb-2" style="font-size: 2rem;"></i>
+              <h6>Eficiencia</h6>
+              <small>Elimina el uso de Excel y centraliza la información</small>
+            </div>
+            <div class="col-md-3">
+              <i class="fas fa-shield-alt text-success mb-2" style="font-size: 2rem;"></i>
+              <h6>Seguridad</h6>
+              <small>Control de acceso y validaciones robustas</small>
+            </div>
+            <div class="col-md-3">
+              <i class="fas fa-chart-bar text-info mb-2" style="font-size: 2rem;"></i>
+              <h6>Análisis</h6>
+              <small>Reportes y consultas avanzadas</small>
+            </div>
+            <div class="col-md-3">
+              <i class="fas fa-history text-warning mb-2" style="font-size: 2rem;"></i>
+              <h6>Trazabilidad</h6>
+              <small>Historial completo de cambios y ediciones</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

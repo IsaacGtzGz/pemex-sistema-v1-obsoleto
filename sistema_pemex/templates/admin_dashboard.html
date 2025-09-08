@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Dashboard Administrativo - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <!-- Sidebar para Administrador -->
+  <div class="admin-sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-oil-well mb-2" style="font-size: 2rem;"></i>
+      <h4>PEMEX Admin</h4>
+      <small>Sistema de Gestión</small>
+    </div>
+    
+    <ul class="sidebar-menu">
+      <li>
+        <a href="{{ url_for('admin_dashboard') }}" class="active">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_acciones') }}">
+          <i class="fas fa-tasks"></i>
+          Gestionar Acciones
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_usuarios') }}">
+          <i class="fas fa-users"></i>
+          Gestionar Usuarios
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_areas') }}">
+          <i class="fas fa-building"></i>
+          Áreas
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_tipos_accion') }}">
+          <i class="fas fa-tags"></i>
+          Tipos de Acción
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_reportes') }}">
+          <i class="fas fa-chart-bar"></i>
+          Reportes
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_exportar') }}">
+          <i class="fas fa-file-export"></i>
+          Exportar Datos
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('logout') }}">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar Sesión
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="text-pemex-primary">Dashboard Administrativo</h1>
+        <p class="text-muted">Bienvenido, {{ session.nombre_completo or session.username }}</p>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge bg-pemex-primary">{{ session.rol.title() }}</span>
+        <small class="text-muted">
+          <i class="fas fa-calendar me-1"></i>
+          {{ moment().format('DD/MM/YYYY HH:mm') }}
+        </small>
+      </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <div class="card-body text-center">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 class="card-title text-pemex-primary">{{ total_acciones }}</h3>
+                <p class="card-text">Total de Acciones</p>
+              </div>
+              <i class="fas fa-tasks fa-2x text-pemex-primary opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <div class="card-body text-center">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 class="card-title text-success">{{ acciones_completadas }}</h3>
+                <p class="card-text">Completadas</p>
+              </div>
+              <i class="fas fa-check-circle fa-2x text-success opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <div class="card-body text-center">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 class="card-title text-warning">{{ acciones_en_proceso }}</h3>
+                <p class="card-text">En Proceso</p>
+              </div>
+              <i class="fas fa-clock fa-2x text-warning opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <div class="card-body text-center">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 class="card-title text-danger">{{ acciones_vencidas }}</h3>
+                <p class="card-text">Vencidas</p>
+              </div>
+              <i class="fas fa-exclamation-triangle fa-2x text-danger opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos y Reportes -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-pemex-primary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-chart-pie me-2"></i>
+              Distribución por Estado
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas id="estadosChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-pemex-secondary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-chart-bar me-2"></i>
+              Acciones por Mes
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas id="mesesChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Acciones Recientes -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="fas fa-history me-2"></i>
+              Acciones Recientes
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Área</th>
+                    <th>Estado</th>
+                    <th>Fecha Límite</th>
+                    <th>Responsable</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for accion in acciones_recientes %}
+                    <tr>
+                      <td>
+                        <strong class="text-pemex-primary">#{{ accion.id }}</strong>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-{{ accion.tipo_accion.icono or 'tasks' }} me-2 text-muted"></i>
+                          {{ accion.titulo[:50] }}{% if accion.titulo|length > 50 %}...{% endif %}
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-secondary">{{ accion.area.nombre }}</span>
+                      </td>
+                      <td>
+                        {% if accion.estado == 'completada' %}
+                          <span class="badge bg-success">
+                            <i class="fas fa-check me-1"></i>Completada
+                          </span>
+                        {% elif accion.estado == 'en_proceso' %}
+                          <span class="badge bg-warning">
+                            <i class="fas fa-clock me-1"></i>En Proceso
+                          </span>
+                        {% elif accion.estado == 'pendiente' %}
+                          <span class="badge bg-info">
+                            <i class="fas fa-hourglass-start me-1"></i>Pendiente
+                          </span>
+                        {% else %}
+                          <span class="badge bg-danger">
+                            <i class="fas fa-times me-1"></i>Vencida
+                          </span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if accion.fecha_limite %}
+                          <small class="{% if accion.esta_vencida() %}text-danger{% elif accion.dias_restantes() <= 3 %}text-warning{% else %}text-muted{% endif %}">
+                            {{ accion.fecha_limite.strftime('%d/%m/%Y') }}
+                          </small>
+                        {% else %}
+                          <small class="text-muted">Sin fecha</small>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ accion.responsable.nombre_completo() if accion.responsable else 'Sin asignar' }}</small>
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <a href="{{ url_for('ver_accion', id=accion.id) }}" 
+                             class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye"></i>
+                          </a>
+                          <a href="{{ url_for('editar_accion', id=accion.id) }}" 
+                             class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                Mostrando las últimas {{ acciones_recientes|length }} acciones
+              </small>
+              <a href="{{ url_for('admin_acciones') }}" class="btn btn-primary btn-sm">
+                Ver Todas las Acciones <i class="fas fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Gráfico de distribución por estados
+    const estadosCtx = document.getElementById('estadosChart').getContext('2d');
+    new Chart(estadosCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completadas', 'En Proceso', 'Pendientes', 'Vencidas'],
+        datasets: [{
+          data: [{{ acciones_completadas }}, {{ acciones_en_proceso }}, {{ acciones_pendientes }}, {{ acciones_vencidas }}],
+          backgroundColor: [
+            '#27AE60',  // Verde para completadas
+            '#F39C12',  // Amarillo para en proceso
+            '#3498DB',  // Azul para pendientes
+            '#E74C3C'   // Rojo para vencidas
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Gráfico de acciones por mes
+    const mesesCtx = document.getElementById('mesesChart').getContext('2d');
+    new Chart(mesesCtx, {
+      type: 'bar',
+      data: {
+        labels: {{{ acciones_por_mes.keys() | list | tojson }}},
+        datasets: [{
+          label: 'Acciones Creadas',
+          data: {{{ acciones_por_mes.values() | list | tojson }}},
+          backgroundColor: 'rgba(13, 115, 119, 0.8)',
+          borderColor: 'rgba(13, 115, 119, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  </script>
+{% endblock %}

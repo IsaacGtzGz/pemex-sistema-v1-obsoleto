@@ -1,0 +1,695 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Administración - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">
+        <i class="fas fa-cog me-2"></i>
+        Panel de Administración
+      </h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('dashboard') }}">Panel Principal</a>
+          </li>
+          <li class="breadcrumb-item active">Administración</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Módulos de administración -->
+  <div class="row">
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-primary bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-users fa-2x"></i>
+          </div>
+          <h5 class="card-title">Gestión de Usuarios</h5>
+          <p class="card-text">Administra usuarios del sistema, roles y permisos. Crea, edita y gestiona cuentas de usuario.</p>
+          <a href="{{ url_for('admin_usuarios') }}" class="btn btn-primary"><i class="fas fa-users me-2"></i>Gestionar Usuarios</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-success bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-list fa-2x"></i>
+          </div>
+          <h5 class="card-title">Catálogos</h5>
+          <p class="card-text">Administra catálogos del sistema: dependencias, municipios, tipos de reporte y clasificaciones.</p>
+          <button class="btn btn-success" onclick="mostrarCatalogos()"><i class="fas fa-list me-2"></i>Gestionar Catálogos</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-info bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-chart-line fa-2x"></i>
+          </div>
+          <h5 class="card-title">Reportes Administrativos</h5>
+          <p class="card-text">Genera reportes de uso del sistema, estadísticas y métricas de desempeño.</p>
+          <button class="btn btn-info" onclick="mostrarReportesAdmin()"><i class="fas fa-chart-line me-2"></i>Ver Reportes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-warning bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-cog fa-2x"></i>
+          </div>
+          <h5 class="card-title">Configuración General</h5>
+          <p class="card-text">Configura parámetros del sistema, notificaciones y opciones generales.</p>
+          <button class="btn btn-warning" onclick="mostrarConfiguracion()"><i class="fas fa-cog me-2"></i>Configurar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-secondary bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-database fa-2x"></i>
+          </div>
+          <h5 class="card-title">Respaldo de Datos</h5>
+          <p class="card-text">Administra respaldos de la base de datos y restauración del sistema.</p>
+          <button class="btn btn-secondary" onclick="mostrarRespaldos()"><i class="fas fa-database me-2"></i>Gestionar Respaldos</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="feature-icon bg-danger bg-gradient text-white mb-3 mx-auto">
+            <i class="fas fa-shield-alt fa-2x"></i>
+          </div>
+          <h5 class="card-title">Seguridad y Auditoría</h5>
+          <p class="card-text">Revisa logs de seguridad, intentos de acceso y auditoría del sistema.</p>
+          <button class="btn btn-danger" onclick="mostrarSeguridad()"><i class="fas fa-shield-alt me-2"></i>Ver Auditoría</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <h3><i class="fas fa-chart-bar me-2"></i>Estadísticas del Sistema</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Usuarios Activos</h6>
+              <h2 class="mb-0" id="totalUsuarios">--</h2>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-users fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Reportes Este Mes</h6>
+              <h2 class="mb-0" id="reportesMes">--</h2>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-file-alt fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card text-white bg-warning">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Acuerdos Pendientes</h6>
+              <h2 class="mb-0" id="acuerdosPendientes">--</h2>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clock fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card text-white bg-info">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Último Acceso</h6>
+              <h6 class="mb-0" id="ultimoAcceso">--</h6>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clock fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .feature-icon {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .card {
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      cargarEstadisticas()
+    })
+    
+    function cargarEstadisticas() {
+      // Cargar estadísticas del sistema
+      fetch('/api/estadisticas-admin')
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            document.getElementById('totalUsuarios').textContent = data.estadisticas.usuarios || '0'
+            document.getElementById('reportesMes').textContent = data.estadisticas.reportes_mes || '0'
+            document.getElementById('acuerdosPendientes').textContent = data.estadisticas.acuerdos_pendientes || '0'
+            document.getElementById('ultimoAcceso').textContent = data.estadisticas.ultimo_acceso || 'N/A'
+          }
+        })
+        .catch((error) => {
+          console.error('Error al cargar estadísticas:', error)
+        })
+    }
+    
+    function mostrarCatalogos() {
+      alert('Funcionalidad de catálogos en desarrollo')
+    }
+    
+    function mostrarReportesAdmin() {
+      alert('Funcionalidad de reportes administrativos en desarrollo')
+    }
+    
+    function mostrarConfiguracion() {
+      alert('Funcionalidad de configuración en desarrollo')
+    }
+    
+    function mostrarRespaldos() {
+      alert('Funcionalidad de respaldos en desarrollo')
+    }
+    
+    function mostrarSeguridad() {
+      alert('Funcionalidad de seguridad en desarrollo')
+    }
+  </script>
+{% endblock %}
+<div class="card-body">
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Nombre Completo</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Último Acceso</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>
+            <strong>admin</strong>
+          </td>
+          <td>Administrador del Sistema</td>
+          <td>admin@pemex.mx</td>
+          <td>
+            <span class="badge bg-danger">Administrador</span>
+          </td>
+          <td>
+            <span class="badge bg-success">Activo</span>
+          </td>
+          <td>Hoy 14:20</td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary" onclick="editarUsuario(1)"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-outline-warning" onclick="resetPassword(1)"><i class="fas fa-key"></i></button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>
+            <strong>capturista1</strong>
+          </td>
+          <td>Juan Pérez Capturista</td>
+          <td>capturista1@pemex.mx</td>
+          <td>
+            <span class="badge bg-info">Capturista</span>
+          </td>
+          <td>
+            <span class="badge bg-success">Activo</span>
+          </td>
+          <td>Ayer 16:45</td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary" onclick="editarUsuario(2)"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-outline-warning" onclick="resetPassword(2)"><i class="fas fa-key"></i></button>
+              <button class="btn btn-outline-danger" onclick="desactivarUsuario(2)"><i class="fas fa-ban"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tab de Catálogos -->
+<div class="tab-pane fade" id="catalogos" role="tabpanel">
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0">Oficinas Regionales</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Gestionar oficinas regionales y sus abreviaciones.</p>
+          <button class="btn btn-outline-success btn-sm" onclick="gestionarCatalogo('oficinas')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0">Tipos de Reporte</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Administrar tipos de reportes disponibles en el sistema.</p>
+          <button class="btn btn-outline-info btn-sm" onclick="gestionarCatalogo('tipos_reporte')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-warning text-white">
+          <h6 class="mb-0">Entidades Federativas</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Gestionar estados y su relación con oficinas regionales.</p>
+          <button class="btn btn-outline-warning btn-sm" onclick="gestionarCatalogo('entidades')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0">Municipios</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Administrar municipios por entidad federativa.</p>
+          <button class="btn btn-outline-primary btn-sm" onclick="gestionarCatalogo('municipios')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h6 class="mb-0">Tipos de Atención</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Gestionar tipos de atención disponibles.</p>
+          <button class="btn btn-outline-secondary btn-sm" onclick="gestionarCatalogo('tipos_atencion')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-dark text-white">
+          <h6 class="mb-0">Otros Catálogos</h6>
+        </div>
+        <div class="card-body">
+          <p class="card-text">Actores internos, tipos de problemática, etc.</p>
+          <button class="btn btn-outline-dark btn-sm" onclick="gestionarCatalogo('otros')"><i class="fas fa-edit me-2"></i>Gestionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab de Configuración -->
+<div class="tab-pane fade" id="configuracion" role="tabpanel">
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h6 class="mb-0">
+            <i class="fas fa-shield-alt me-2"></i>
+            Configuración de Seguridad
+          </h6>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label">Longitud mínima de contraseña</label>
+              <input type="number" class="form-control" value="8" min="6" max="20" />
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="requiereCaracteresEspeciales" checked />
+              <label class="form-check-label" for="requiereCaracteresEspeciales">Requerir caracteres especiales</label>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="requiereMayusculas" checked />
+              <label class="form-check-label" for="requiereMayusculas">Requerir mayúsculas</label>
+            </div>
+            <button type="submit" class="btn btn-warning"><i class="fas fa-save me-2"></i>Guardar Configuración</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0">
+            <i class="fas fa-database me-2"></i>
+            Configuración del Sistema
+          </h6>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label">Registros por página</label>
+              <select class="form-select">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="autoGuardado" checked />
+              <label class="form-check-label" for="autoGuardado">Habilitar auto-guardado</label>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Intervalo de auto-guardado (minutos)</label>
+              <input type="number" class="form-control" value="1" min="1" max="10" />
+            </div>
+            <button type="submit" class="btn btn-info"><i class="fas fa-save me-2"></i>Guardar Configuración</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Herramientas de mantenimiento -->
+  <div class="card">
+    <div class="card-header bg-danger text-white">
+      <h6 class="mb-0">
+        <i class="fas fa-tools me-2"></i>
+        Herramientas de Mantenimiento
+      </h6>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-danger w-100" onclick="limpiarBoradores()">
+            <i class="fas fa-trash me-2"></i>
+            Limpiar Borradores Antiguos
+          </button>
+        </div>
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-warning w-100" onclick="respaldoBD()">
+            <i class="fas fa-download me-2"></i>
+            Respaldar Base de Datos
+          </button>
+        </div>
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-info w-100" onclick="verificarIntegridad()">
+            <i class="fas fa-check-circle me-2"></i>
+            Verificar Integridad
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab de Reportes Admin -->
+<div class="tab-pane fade" id="reportes-admin" role="tabpanel">
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0">Estadísticas de Uso</h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6">
+              <h3 class="text-primary">156</h3>
+              <small>Total Reportes</small>
+            </div>
+            <div class="col-6">
+              <h3 class="text-success">23</h3>
+              <small>Usuarios Activos</small>
+            </div>
+          </div>
+          <div class="row text-center mt-3">
+            <div class="col-6">
+              <h3 class="text-info">42</h3>
+              <small>Reportes Este Mes</small>
+            </div>
+            <div class="col-6">
+              <h3 class="text-warning">12</h3>
+              <small>Pendientes</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0">Actividad del Sistema</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <small>Reportes por Oficina Regional</small>
+            <div class="progress">
+              <div class="progress-bar bg-primary" style="width: 35%">Centro (35%)</div>
+              <div class="progress-bar bg-success" style="width: 25%">Norte (25%)</div>
+              <div class="progress-bar bg-info" style="width: 20%">Sur (20%)</div>
+              <div class="progress-bar bg-warning" style="width: 20%">Otros (20%)</div>
+            </div>
+          </div>
+          <div class="mb-2">
+            <small>Tipos de Reporte</small>
+            <div class="progress">
+              <div class="progress-bar bg-primary" style="width: 45%">AP (45%)</div>
+              <div class="progress-bar bg-warning" style="width: 35%">PS (35%)</div>
+              <div class="progress-bar bg-danger" style="width: 20%">CON (20%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-info text-white">
+      <h6 class="mb-0">Logs del Sistema</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Fecha/Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>02/09/2025 14:20</td>
+              <td>admin</td>
+              <td>
+                <span class="badge bg-success">Login</span>
+              </td>
+              <td>Inicio de sesión exitoso</td>
+            </tr>
+            <tr>
+              <td>02/09/2025 13:45</td>
+              <td>capturista1</td>
+              <td>
+                <span class="badge bg-info">Crear</span>
+              </td>
+              <td>Nuevo reporte ORC-PS-001</td>
+            </tr>
+            <tr>
+              <td>02/09/2025 13:30</td>
+              <td>capturista1</td>
+              <td>
+                <span class="badge bg-warning">Editar</span>
+              </td>
+              <td>Actualización de reporte ORC-AP-002</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para gestión de usuarios -->
+<div class="modal fade" id="modalUsuario" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-user me-2"></i>
+          Gestionar Usuario
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formUsuario">
+          <div class="mb-3">
+            <label class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" name="username" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre Completo</label>
+            <input type="text" class="form-control" name="nombre_completo" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select class="form-select" name="rol" required>
+              <option value="">Seleccionar rol</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Capturista">Capturista</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" />
+            <div class="form-text">Deja en blanco para mantener la contraseña actual</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="guardarUsuario()"><i class="fas fa-save me-2"></i>Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function nuevoUsuario() {
+      $('#formUsuario')[0].reset()
+      $('#modalUsuario .modal-title').html('<i class="fas fa-user-plus me-2"></i>Nuevo Usuario')
+      $('#modalUsuario').modal('show')
+    }
+    
+    function editarUsuario(id) {
+      // Cargar datos del usuario
+      $('#modalUsuario .modal-title').html('<i class="fas fa-user-edit me-2"></i>Editar Usuario')
+      $('#modalUsuario').modal('show')
+    }
+    
+    function guardarUsuario() {
+      if (Utils.validateForm('formUsuario')) {
+        Utils.showNotification('Usuario guardado exitosamente', 'success')
+        $('#modalUsuario').modal('hide')
+      }
+    }
+    
+    function resetPassword(id) {
+      Utils.confirmAction('¿Estás seguro de resetear la contraseña de este usuario?', function () {
+        Utils.showNotification('Contraseña reseteada. Nueva contraseña enviada por email.', 'success')
+      })
+    }
+    
+    function desactivarUsuario(id) {
+      Utils.confirmAction('¿Estás seguro de desactivar este usuario?', function () {
+        Utils.showNotification('Usuario desactivado exitosamente', 'warning')
+      })
+    }
+    
+    function gestionarCatalogo(tipo) {
+      Utils.showNotification(`Abriendo gestión de ${tipo}...`, 'info')
+      // Implementar gestión específica de cada catálogo
+    }
+    
+    function limpiarBoradores() {
+      Utils.confirmAction('¿Eliminar todos los borradores antiguos? Esta acción no se puede deshacer.', function () {
+        Utils.showNotification('Borradores antiguos eliminados', 'success')
+      })
+    }
+    
+    function respaldoBD() {
+      Utils.showNotification('Iniciando respaldo de base de datos...', 'info')
+      setTimeout(() => {
+        Utils.showNotification('Respaldo completado exitosamente', 'success')
+      }, 3000)
+    }
+    
+    function verificarIntegridad() {
+      Utils.showNotification('Verificando integridad de datos...', 'info')
+      setTimeout(() => {
+        Utils.showNotification('Verificación completada. No se encontraron problemas.', 'success')
+      }, 2000)
+    }
+  </script>
+{% endblock %}

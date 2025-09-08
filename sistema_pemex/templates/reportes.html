@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Reportes y Consultas - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">
+        <i class="fas fa-chart-bar me-2"></i>
+        Reportes y Consultas
+      </h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('dashboard') }}">Panel Principal</a>
+          </li>
+          <li class="breadcrumb-item active">Reportes</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Filtros de búsqueda -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+        <i class="fas fa-filter me-2"></i>
+        Filtros de Búsqueda
+      </h5>
+    </div>
+    <div class="card-body">
+      <form id="form-filtros">
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Tipo de Reporte</label>
+            <select class="form-select" name="tipo_reporte">
+              <option value="">Todos</option>
+              <option value="1">Acción Preventiva</option>
+              <option value="2">Problemática Social</option>
+              <option value="3">Conflicto</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Oficina Regional</label>
+            <select class="form-select" name="oficina_regional">
+              <option value="">Todas</option>
+              <!-- Se llenan dinámicamente -->
+            </select>
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Estatus</label>
+            <select class="form-select" name="estatus">
+              <option value="">Todos</option>
+              <option value="proceso">En proceso</option>
+              <option value="atendido">Atendido</option>
+              <option value="cerrado">Cerrado</option>
+              <option value="suspendido">Suspendido</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Fecha Desde</label>
+            <input type="date" class="form-control" name="fecha_desde" />
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">Fecha Hasta</label>
+            <input type="date" class="form-control" name="fecha_hasta" />
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Buscar en Descripción</label>
+            <input type="text" class="form-control" name="buscar_texto" placeholder="Buscar en descripción del evento..." />
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="btn btn-primary d-block w-100" onclick="aplicarFiltros()"><i class="fas fa-search me-2"></i>Buscar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Botones de exportación -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">
+        <i class="fas fa-download me-2"></i>
+        Exportación de Datos
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-success w-100" onclick="exportarExcel()">
+            <i class="fas fa-file-excel me-2"></i>
+            Exportar a Excel
+          </button>
+        </div>
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-info w-100" onclick="exportarCSV()">
+            <i class="fas fa-file-csv me-2"></i>
+            Exportar a CSV
+          </button>
+        </div>
+        <div class="col-md-4 mb-3">
+          <button class="btn btn-outline-danger w-100" onclick="exportarPDF()">
+            <i class="fas fa-file-pdf me-2"></i>
+            Exportar a PDF
+          </button>
+        </div>
+      </div>
+      <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Nota:</strong> La exportación respetará los filtros aplicados actualmente.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de resultados -->
+  <div class="card">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="fas fa-table me-2"></i>
+        Resultados de la Consulta
+      </h5>
+      <span class="badge bg-light text-dark" id="contador-resultados">0 registros</span>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover data-table" id="tabla-reportes">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Tipo</th>
+              <th>Fecha Reporte</th>
+              <th>Oficina Regional</th>
+              <th>Entidad</th>
+              <th>Municipio</th>
+              <th>Estatus</th>
+              <th>Responsable</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Datos de ejemplo -->
+            <tr>
+              <td>
+                <strong>ORC-PS-001</strong>
+              </td>
+              <td>
+                <span class="badge bg-warning">Problemática Social</span>
+              </td>
+              <td>15/08/2025</td>
+              <td>Oficina Regional Centro</td>
+              <td>Ciudad de México</td>
+              <td>Miguel Hidalgo</td>
+              <td>
+                <span class="badge bg-info">En proceso</span>
+              </td>
+              <td>Juan Pérez</td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-outline-primary" onclick="verDetalle(1)"><i class="fas fa-eye"></i></button>
+                  <button type="button" class="btn btn-outline-success" onclick="editarReporte(1)"><i class="fas fa-edit"></i></button>
+                  <button type="button" class="btn btn-outline-info" onclick="verSeguimiento(1)"><i class="fas fa-tasks"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>ORC-AP-002</strong>
+              </td>
+              <td>
+                <span class="badge bg-primary">Acción Preventiva</span>
+              </td>
+              <td>20/08/2025</td>
+              <td>Oficina Regional Centro</td>
+              <td>Estado de México</td>
+              <td>Naucalpan</td>
+              <td>
+                <span class="badge bg-success">Atendido</span>
+              </td>
+              <td>María González</td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-outline-primary" onclick="verDetalle(2)"><i class="fas fa-eye"></i></button>
+                  <button type="button" class="btn btn-outline-success" onclick="editarReporte(2)"><i class="fas fa-edit"></i></button>
+                  <button type="button" class="btn btn-outline-info" onclick="verSeguimiento(2)"><i class="fas fa-tasks"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>ORN-CON-001</strong>
+              </td>
+              <td>
+                <span class="badge bg-danger">Conflicto</span>
+              </td>
+              <td>25/08/2025</td>
+              <td>Oficina Regional Norte</td>
+              <td>Nuevo León</td>
+              <td>Monterrey</td>
+              <td>
+                <span class="badge bg-warning">En proceso</span>
+              </td>
+              <td>Carlos López</td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-outline-primary" onclick="verDetalle(3)"><i class="fas fa-eye"></i></button>
+                  <button type="button" class="btn btn-outline-success" onclick="editarReporte(3)"><i class="fas fa-edit"></i></button>
+                  <button type="button" class="btn btn-outline-info" onclick="verSeguimiento(3)"><i class="fas fa-tasks"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ver detalles -->
+  <div class="modal fade" id="modalDetalle" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-eye me-2"></i>
+            Detalle del Reporte
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="contenido-detalle">
+          <!-- Se llena dinámicamente -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" onclick="imprimirDetalle()"><i class="fas fa-print me-2"></i>Imprimir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      // Inicializar DataTable usando utilidades PEMEX
+      PemexUtils.DataTables.init('#tabla-reportes', {
+        order: [[2, 'desc']], // Ordenar por fecha
+        columnDefs: [
+          { targets: [8], orderable: false, className: 'no-sort' } // Columna de acciones no ordenable
+        ]
+      })
+    })
+    
+    function aplicarFiltros() {
+      // Implementar filtros reales con AJAX
+      PemexUtils.showNotification('Filtros aplicados', 'success', 2000)
+    }
+    
+    function exportarExcel() {
+      PemexUtils.showNotification('Generando archivo Excel...', 'info')
+      // Implementar exportación real
+      setTimeout(() => {
+        PemexUtils.showNotification('Archivo Excel generado exitosamente', 'success')
+      }, 2000)
+    }
+    
+    function exportarCSV() {
+      PemexUtils.showNotification('Generando archivo CSV...', 'info')
+      // Implementar exportación real
+      setTimeout(() => {
+        PemexUtils.showNotification('Archivo CSV generado exitosamente', 'success')
+      }, 2000)
+    }
+    
+    function exportarPDF() {
+      PemexUtils.showNotification('Generando archivo PDF...', 'info')
+      // Implementar exportación real
+      setTimeout(() => {
+        PemexUtils.showNotification('Archivo PDF generado exitosamente', 'success')
+      }, 2000)
+    }
+    
+    function verDetalle(id) {
+      // Simular carga de detalles
+      const detalleEjemplo = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Información Básica</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Folio:</strong></td><td>ORC-PS-001</td></tr>
+                                <tr><td><strong>Tipo:</strong></td><td>Problemática Social</td></tr>
+                                <tr><td><strong>Fecha:</strong></td><td>15/08/2025</td></tr>
+                                <tr><td><strong>Responsable:</strong></td><td>Juan Pérez</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Ubicación</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Oficina Regional:</strong></td><td>Oficina Regional Centro</td></tr>
+                                <tr><td><strong>Entidad:</strong></td><td>Ciudad de México</td></tr>
+                                <tr><td><strong>Municipio:</strong></td><td>Miguel Hidalgo</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>Descripción del Evento</h6>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        </div>
+                    </div>
+                `
+    
+      $('#contenido-detalle').html(detalleEjemplo)
+      $('#modalDetalle').modal('show')
+    }
+    
+    function editarReporte(id) {
+      Utils.showNotification('Redirigiendo al formulario de edición...', 'info')
+      // Implementar redirección
+    }
+    
+    function verSeguimiento(id) {
+      Utils.showNotification('Redirigiendo al seguimiento...', 'info')
+      // Implementar redirección
+    }
+    
+    function imprimirDetalle() {
+      window.print()
+    }
+  </script>
+{% endblock %}

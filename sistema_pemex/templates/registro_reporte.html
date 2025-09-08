@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Registro de Reporte - Sistema PEMEX
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">
+        <i class="fas fa-plus-circle me-2"></i>
+        Registro de Reporte de Acciones Preventivas y Problemática Social
+      </h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('dashboard') }}">Panel Principal</a>
+          </li>
+          <li class="breadcrumb-item active">Nuevo Reporte</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Navegación de pasos -->
+  <div class="step-nav mb-4">
+    <div class="step active">
+      <div class="step-number">1</div>
+      <small>Información Básica</small>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <small>Descripción del Evento</small>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <small>Actores y Ubicación</small>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <small>Clasificación y Estatus</small>
+    </div>
+  </div>
+
+  <form id="main-form" method="POST" action="{{ url_for('registro_reporte') }}">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-info-circle me-2"></i>
+          Información Básica del Reporte
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Número de registro (automático) -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Número de Registro</label>
+            <input type="text" class="form-control" value="Se generará automáticamente" readonly />
+            <div class="help-text">Este campo se llena automáticamente al guardar</div>
+          </div>
+
+          <!-- Responsable de captura (automático) -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Responsable de la Captura</label>
+            <input type="text" class="form-control" value="{{ current_user.nombre_completo }}" readonly />
+          </div>
+
+          <!-- Oficina Regional -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Oficina Regional</label>
+            <select class="form-select" id="oficina_regional_id" name="oficina_regional_id" required>
+              <option value="">Selecciona una oficina regional</option>
+              <!-- Se llenarán con JavaScript desde la API -->
+            </select>
+          </div>
+
+          <!-- Año de reporte (automático) -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Año de Reporte</label>
+            <input type="text" class="form-control" value="{{ current_year }}" readonly />
+          </div>
+
+          <!-- Folio (se genera automáticamente) -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Folio</label>
+            <input type="text" class="form-control" id="folio" name="folio" placeholder="Se generará automáticamente" readonly />
+            <div class="help-text">Formato: [Oficina]-[Tipo]-[Consecutivo]</div>
+          </div>
+
+          <!-- Tipo de Reporte -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Tipo de Reporte</label>
+            <select class="form-select" id="tipo_reporte_id" name="tipo_reporte_id" required>
+              <option value="">Selecciona el tipo de reporte</option>
+              <!-- Se llenarán desde la base de datos -->
+            </select>
+          </div>
+
+          <!-- Fecha de Reporte -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Fecha de Reporte</label>
+            <input type="date" class="form-control" id="fecha_reporte" name="fecha_reporte" value="{{ current_date }}" required />
+          </div>
+
+          <!-- Entidad Federativa -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Entidad Federativa</label>
+            <select class="form-select" id="entidad_federativa_id" name="entidad_federativa_id" required>
+              <option value="">Primero selecciona una oficina regional</option>
+            </select>
+          </div>
+
+          <!-- Municipio -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Municipio(s)</label>
+            <select class="form-select" id="municipio_id" name="municipio_id" required>
+              <option value="">Primero selecciona una entidad federativa</option>
+            </select>
+          </div>
+
+          <!-- Fecha de Inicio de Problemática (condicional) -->
+          <div class="col-md-6 mb-3 campo-fecha-inicio conditional-field">
+            <label class="form-label required">Fecha de Inicio de Problemática/Conflicto</label>
+            <input type="date" class="form-control" id="fecha_inicio_problematica" name="fecha_inicio_problematica" />
+            <div class="help-text">Solo para reportes de Problemática Social o Conflicto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción del Evento -->
+    <div class="card mt-4">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-file-alt me-2"></i>
+          Descripción del Evento
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Descripción del Evento -->
+          <div class="col-12 mb-3">
+            <label class="form-label required">Descripción del Evento</label>
+            <textarea class="form-control" id="descripcion_evento" name="descripcion_evento" rows="4" required placeholder="Describe detalladamente el evento..."></textarea>
+            <div class="help-text">
+              <strong>Debe responder a estas preguntas:</strong><br />
+              1. ¿Qué pasó?<br />
+              2. ¿Cuándo ocurrió?<br />
+              3. ¿Dónde sucedió?
+            </div>
+          </div>
+
+          <!-- Exigencia y/o reclamación -->
+          <div class="col-12 mb-3">
+            <label class="form-label required">Exigencia y/o Reclamación</label>
+            <textarea class="form-control" id="exigencia_reclamacion" name="exigencia_reclamacion" rows="3" required placeholder="Describe las exigencias o reclamaciones..."></textarea>
+          </div>
+
+          <!-- Impacto en caso de no atender -->
+          <div class="col-12 mb-3">
+            <label class="form-label required">Impacto en caso de no atender</label>
+            <textarea class="form-control" id="impacto_no_atender" name="impacto_no_atender" rows="3" required placeholder="Describe el impacto potencial..."></textarea>
+          </div>
+
+          <!-- Acciones a realizar -->
+          <div class="col-12 mb-3">
+            <label class="form-label required">Acciones a realizar</label>
+            <textarea class="form-control" id="acciones_realizar" name="acciones_realizar" rows="3" required placeholder="Describe las acciones propuestas..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="row mt-4">
+      <div class="col-12 text-end">
+        <button type="button" class="btn btn-outline-secondary me-2" onclick="guardarBorrador()"><i class="fas fa-save me-2"></i>Guardar Borrador</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-check me-2"></i>Registrar Reporte</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Indicador de auto-guardado -->
+  <div id="auto-save" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <div class="toast" role="alert">
+      <div class="toast-header">
+        <i class="fas fa-save text-success me-2"></i>
+        <strong class="me-auto">Auto-guardado</strong>
+      </div>
+      <div class="toast-body">Borrador guardado automáticamente</div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    // Cargar catálogos al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+      Utils.cargarCatalogos.tiposReporte('tipo_reporte')
+      Utils.cargarCatalogos.oficinasRegionales('oficina_regional')
+      Utils.cargarCatalogos.entidadesFederativas('entidad_federativa')
+      Utils.cargarCatalogos.actoresInternos('actor_interno')
+      Utils.cargarCatalogos.tiposAtencion('tipo_atencion')
+    
+      // Evento para cargar municipios cuando cambie la entidad federativa
+      document.getElementById('entidad_federativa').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex]
+        const entidadId = selectedOption.getAttribute('data-id')
+        if (entidadId) {
+          Utils.cargarCatalogos.municipios(entidadId, 'municipio')
+        } else {
+          document.getElementById('municipio').innerHTML = '<option value="">Seleccionar municipio</option>'
+        }
+      })
+    
+      // Preview del folio
+      function actualizarFolioPreview() {
+        const tipo = document.getElementById('tipo_reporte').value
+        const oficina = document.getElementById('oficina_regional').value
+        const folioPreview = Utils.generarFolioPreview(tipo, oficina)
+    
+        let folioElement = document.getElementById('folio_preview')
+        if (!folioElement) {
+          folioElement = document.createElement('div')
+          folioElement.id = 'folio_preview'
+          folioElement.className = 'alert alert-info mt-2'
+          document.querySelector('.card-body').insertBefore(folioElement, document.querySelector('.row'))
+        }
+    
+        if (folioPreview) {
+          folioElement.innerHTML = `<strong>Folio estimado:</strong> ${folioPreview}`
+          folioElement.style.display = 'block'
+        } else {
+          folioElement.style.display = 'none'
+        }
+      }
+    
+      document.getElementById('tipo_reporte').addEventListener('change', actualizarFolioPreview)
+      document.getElementById('oficina_regional').addEventListener('change', actualizarFolioPreview)
+    
+      // Manejar envío del formulario
+      document.getElementById('formRegistroReporte').addEventListener('submit', function (e) {
+        e.preventDefault()
+        guardarReporte()
+      })
+    })
+    
+    function guardarReporte() {
+      Utils.submitFormRegistroReporte('formRegistroReporte', false)
+    }
+    
+    function guardarBorrador() {
+      Utils.submitFormRegistroReporte('formRegistroReporte', true)
+    }
+  </script>
+{% endblock %}
