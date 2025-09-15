@@ -1,4 +1,92 @@
-# 🚨 Sistema PEMEX - Prototipo v1.0 (DEPRECATED)
+# ⚠️ REPOSITORIO OBSOLETO - PEMEX SISTEMA v1.0
+
+Este repositorio contiene la versión 1.0 del sistema PEMEX (**obsoleta**).
+
+## 🔗 NUEVA VERSIÓN v2.0 PWA
+
+**Repositorio activo:** [pemex-sistema-v2-pwa](https://github.com/IsaacGtzGz/pemex-sistema-v2-pwa)
+
+### 🚀 Características v2.0:
+
+- ✅ **Progressive Web App (PWA)** con funcionalidad offline
+- ✅ **Next.js 14 + TypeScript** para desarrollo moderno
+- ✅ **MySQL + Prisma ORM** (migrado desde PostgreSQL por familiaridad del equipo)
+- ✅ **Arquitectura moderna y escalable** con monorepo
+- ✅ **Sistema de folios anuales** (2024-001, 2025-001)
+- ✅ **Autenticación JWT** robusta con NextAuth.js
+- ✅ **Validaciones inteligentes** para campos AE-CF
+- ✅ **Testing automatizado** completo
+
+### 📋 Migración de Funcionalidades:
+
+| Característica v1.0    | Estado v2.0     | Mejoras                                    |
+| ---------------------- | --------------- | ------------------------------------------ |
+| **Formularios Excel**  | ✅ Digitalizado | Web forms con validaciones inteligentes    |
+| **Campos manuales**    | ✅ Automatizado | Cálculos automáticos y catálogos dinámicos |
+| **Sin control acceso** | ✅ Implementado | Roles (Admin/Capturista) con JWT           |
+| **Archivos locales**   | ✅ Base datos   | MySQL centralizada con Prisma ORM          |
+| **Sin seguimiento**    | ✅ Auditoría    | Historial completo de cambios              |
+| **Excel dependiente**  | ✅ Web nativa   | PWA instalable en cualquier dispositivo    |
+
+### 🔄 Proceso de Migración:
+
+- **✅ Código:** Reescrito completamente en v2.0 con arquitectura moderna
+- **✅ Datos:** Herramientas de migración automática disponibles
+- **✅ Funcionalidad:** Todas las características v1.0 + nuevas mejoras
+- **✅ Documentación:** Propuesta técnica completa y guías de usuario
+
+---
+
+## 📚 Documentación Histórica v1.0
+
+### Archivos Disponibles en este Repositorio:
+
+- `sistema_pemex/` - Código fuente v1.0 (obsoleto)
+- `database/` - Esquemas de base de datos v1.0
+- `Propuesta_Tecnica_PWA_v2_PEMEX_Sistema_Acciones_Preventivas.md` - Propuesta técnica v2.0
+- `Estrategia_Repositorio_v2_PWA.md` - Plan de migración
+- `250515 Propuesta base para Ap y prob 2025 -V2_issac.xlsx` - Análisis funcional Excel
+
+### ⚠️ Advertencia de Seguridad
+
+**No usar este código en producción.** La versión v1.0 contiene vulnerabilidades conocidas y carece de las medidas de seguridad implementadas en v2.0.
+
+---
+
+## 🎯 Recomendaciones
+
+### Para Desarrollo Nuevo:
+
+👉 **Usar exclusivamente [pemex-sistema-v2-pwa](https://github.com/IsaacGtzGz/pemex-sistema-v2-pwa)**
+
+### Para Consulta Histórica:
+
+👉 **Este repositorio permanece disponible solo para referencia**
+
+### Para Migración de Datos:
+
+👉 **Contactar equipo de desarrollo para herramientas de migración**
+
+---
+
+## 📞 Soporte
+
+**Isaac Gutiérrez Gómez**  
+_Desarrollador de Soluciones Empresariales_
+
+- 🐙 **GitHub:** [@IsaacGtzGz](https://github.com/IsaacGtzGz)
+- 📧 **Email:** [Contacto disponible en nuevo repositorio]
+- 💼 **LinkedIn:** [Perfil disponible en nuevo repositorio]
+
+---
+
+**Estado:** 🔒 **Archivado** (Solo consulta histórica)  
+**Última actualización:** Diciembre 2024  
+**Repositorio activo:** [pemex-sistema-v2-pwa](https://github.com/IsaacGtzGz/pemex-sistema-v2-pwa)
+
+---
+
+**© 2024 PEMEX - Sistema de Acciones Preventivas y Problemática Social**
 
 ## ⚠️ **IMPORTANTE: ESTE PROTOTIPO ESTÁ DISCONTINUADO**
 
