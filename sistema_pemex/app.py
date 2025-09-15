@@ -9,11 +9,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'pemex-sistema-secreto-2025')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'CHANGE-THIS-SECRET-KEY')
 
 # Configuración de base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 
-    'mysql+mysqlconnector://root:root@localhost:3306/sistema_pemex')
+    'mysql+mysqlconnector://user:password@localhost:3306/database_name')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Importar db y modelos
