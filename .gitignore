@@ -135,3 +135,53 @@ config_local.py
 # Logs específicos del proyecto
 logs/
 *.log
+
+# ========================================
+# 🚨 DATOS SENSIBLES Y CONFIDENCIALES 🚨
+# ========================================
+
+# Documentos oficiales de PEMEX (CONFIDENCIALES)
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.ppt
+
+# Archivos específicos del proyecto
+250515*.xlsx
+Propuesta*.pdf
+Propuesta*.docx
+Cotización*.pdf
+Cotización*.docx
+
+# Capturas de pantalla (pueden contener datos sensibles)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+
+# Bases de datos con datos reales
+*.db
+*.sqlite
+*.sql
+database/datos_reales/
+
+# Credenciales y configuraciones locales
+*.env
+.env.*
+config_local.py
+secrets.py
+credentials.json
+
+# Archivos de backup que pueden contener datos sensibles
+backup/
+backups/
+*.backup
+
+# Logs que pueden contener información confidencial
+*.log
+logs/
+sistema_pemex/logs/
