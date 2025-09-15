@@ -19,12 +19,14 @@ Este repositorio contiene el **primer prototipo** del Sistema Web para Registro 
 - ✅ Responsive design básico
 - ✅ Estructura Flask básica
 
-### 🎯 **Próximos pasos:**
+### 🎯 **Nueva Arquitectura PWA v2.0:**
 
-- ✅ **PWA (Progressive Web App)** como nueva arquitectura
-- ✅ **Desarrollo paso a paso** con validaciones continuas
-- ✅ **Tests automatizados** desde el inicio
-- ✅ **Documentación completa** en cada etapa
+- ✅ **Propuesta técnica completa** generada ([PDF disponible](./Propuesta_Tecnica_PWA_v2_PEMEX_Sistema_Acciones_Preventivas.pdf))
+- ✅ **Next.js 14 + TypeScript** como stack principal
+- ✅ **PostgreSQL + Prisma ORM** para robustez empresarial
+- ✅ **PWA completo** con funcionalidad offline
+- ✅ **Testing automatizado** desde el inicio
+- ✅ **Documentación exhaustiva** de requerimientos funcionales
 
 ---
 
